@@ -37,7 +37,7 @@ gameDisplay.fill(YELLOW)
 
 overall_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_sound_file.wav")
 phrase = "I not am drunk"
-sad = "sad.jp2"
+sad = "sad.jpg"
 happy = "happy.jpg"
 
 def display_im(im_path):
@@ -84,9 +84,10 @@ def api_call(file):
     for model in models:
         text_results.append(model.get_transcript(file))
     analysis = []
+    print("Text results:", text_results)
     overall_score = 0
     for text in text_results:
-        overall_score += analysis(phrase, text)
+        overall_score += analyze(phrase, text)
     overall_score = overall_score/len(text_results)
     print("Average Score:", overall_score)
     if overall_score > 0.5:
@@ -95,7 +96,7 @@ def api_call(file):
         return 0
 
 def analyze(phrase, attempt):
-    t1 = phrase.split(" ")
+    t1 = attempt.split(" ")
     t2 = phrase.split(" ")
     score = 0
     cap = 0
@@ -107,6 +108,7 @@ def analyze(phrase, attempt):
         if t1[i] == t2[i]:
             score += 1
     denominator = cap + abs(len(t1) - len(t2))
+    print("denominator:", denominator)
     print("Attempt:", attempt)
     print("Score:", score/denominator)
     print()
