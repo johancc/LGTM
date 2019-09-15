@@ -1,0 +1,33 @@
+{
+	"monologues": [{
+		"speaker": 0,
+		"elements": [{
+			"type": "text",
+			"value": "I",
+			"ts": 1.83,
+			"end_ts": 2.22,
+			"confidence": 1.0
+		}, {
+			"type": "punct",
+			"value": " "
+		}, {
+			"type": "text",
+			"value": "love",
+			"ts": 2.22,
+			"end_ts": 2.61,
+			"confidence": 1.0
+		}, {
+			"type": "punct",
+			"value": " "
+		}, {
+			"type": "text",
+			"value": "Pie",
+			"ts": 2.61,
+			"end_ts": 3.18,
+			"confidence": 0.95
+		}, {
+			"type": "punct",
+			"value": "."
+		}]
+	}]
+}
