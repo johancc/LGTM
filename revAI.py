@@ -24,7 +24,7 @@ class RevAI:
         # Uncomment when trying to conserve time on rev.ai
         # f = open("transcript.json")
         # Get only the first speaker in case of background noise
-        transcript_json = json.load(f)["monologues"][0]
+        # transcript_json = json.load(f)["monologues"][0]
 
         transcript_text = ""
         for i in transcript_json["elements"]:

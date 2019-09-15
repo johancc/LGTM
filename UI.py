@@ -1,3 +1,5 @@
+import pyaudio
+
 __author__ = "Ethan Garza"
 
 import pygame
@@ -146,7 +148,7 @@ while True:
         if event.type == pygame.KEYDOWN:
             # print("here?")
             if event.key == pygame.K_r:
-                # print("r")
+                # print("r")re
                 record("test_sound_file", pygame)
 
     pygame.display.update()

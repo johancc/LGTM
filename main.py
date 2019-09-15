@@ -34,6 +34,7 @@ class Analysis:
     intoxicated: bool
     difference: float
 
+
 def download(url: str) -> str:
     """
     Download file to temporary storage
@@ -51,10 +52,18 @@ def download(url: str) -> str:
 
 
 def analyze(filename: str, original_text: str) -> Analysis:
+    """
+    Computes the fuzzy string similarity between the speech and the original text by using
+    various Speech to Text APIs
+    :param filename: Audio of the user reciting the original text.
+    :param original_text: Text spoken by the user.
+    :return: The final analysis, which includes whether the user is intoxicated or not and the fuzzy similarity.
+    """
     if not os.path.isfile(filename):
         raise ValueError("Path does not exist.")
     match_ratio = 0
     rev_ai_output = REV_AI.get_transcript(filename)
+    print(rev_ai_output)
     match_ratio += fuzz.ratio(original_text, rev_ai_output)
     analysis = Analysis(difference=match_ratio / 1,
                         intoxicated=match_ratio / 1 <= 0.2)
@@ -62,6 +71,9 @@ def analyze(filename: str, original_text: str) -> Analysis:
 
 
 class LGTM(Resource):
+
+    def get(self) -> tuple:
+        return self.post()
 
     def post(self) -> tuple:
         parser = reqparse.RequestParser()
@@ -74,10 +86,8 @@ class LGTM(Resource):
         original_text = args["original_text"]
         if google_object_link is not None:
             audio_file_path = download(google_object_link)
-        try:
-            analysis = analyze(audio_file_path, original_text)
-        except ValueError:
-            return False, 400
+        analysis = analyze(audio_file_path, original_text)
+        print("Analysis: ", analysis)
         if analysis.intoxicated:
             return True, 200
         else:
