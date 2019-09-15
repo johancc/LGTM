@@ -1,6 +1,9 @@
 __author__ = "Ethan Garza"
 
 import pygame
+import os
+# import pyaudio
+import wave
 
 pygame.init()
 
@@ -27,34 +30,124 @@ start = True
 end_x = width
 end_y = height
 
+gameDisplay = pygame.display.set_mode((width, height))
+gameDisplay.fill(YELLOW)
 
 
+def text_objects(text, font):
+    """
+    Creates a text object
+    :param text: a string to represent the message
+    :param font: an associated font
+    :return: A text Surface and its associated rectangle
+    """
+    textSurface = font.render(text, True, BLACK)
+    return textSurface, textSurface.get_rect()
+
+# displays center of text centered around location with font size 'size'
+def message_display(text, loc, size):
+    """
+    To display a message on the window given a text/message at a specified area and size
+    :param text: a string
+    :param loc: a tuple (x, y) format
+    :param size: the size of the text
+    :return: None
+    """
+    # gameDisplay = pygame.display.set_mode((width, height))
+    largeText = pygame.font.Font('freesansbold.ttf', size)
+    TextSurf, TextRect = text_objects(text, largeText)
+    TextRect.center = (loc[0],loc[1])
+    gameDisplay.blit(TextSurf, TextRect)
+
+    pygame.display.update()
+
+
+# filename is a string and in a .wav format
+def record(filename, pygame):
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    CHUNK = 1024
+    FORMAT = pyaudio.paInt16
+    CHANNELS = 2
+    RATE = 44100
+    RECORD_SECONDS = 5
+    WAVE_OUTPUT_FILENAME = filename
+    full_dir = os.path.join(dir_path, filename)
+    if os.path.exists(full_dir):
+        os.remove(full_dir)
+        print("Popped")
+
+    p = pyaudio.PyAudio()
+
+    stream = p.open(format=FORMAT,
+                    channels=CHANNELS,
+                    rate=RATE,
+                    input=True,
+                    frames_per_buffer=CHUNK)
+
+    print("* recording")
+    frames = []
+
+    i = 0
+    end = False
+
+    while i < int(RATE / CHUNK * RECORD_SECONDS) and not end:
+        data = stream.read(CHUNK)
+        frames.append(data)
+        for event in pygame.event.get():
+            if event.type == pygame.K_s:
+                end = True
+        i += 1
+
+    print("* done recording")
+
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+
+    wf = wave.open(full_dir, 'wb')
+    wf.setnchannels(CHANNELS)
+    wf.setsampwidth(p.get_sample_size(FORMAT))
+    wf.setframerate(RATE)
+    wf.writeframes(b''.join(frames))
+    wf.close()
+
+def init_messages():
+    message = "press r to record (will automatically stop recording after 5 seconds)"
+    loc = (150, 400)
+    font_size = 12
+    message_display(message, loc, font_size)
+    message = "press s to stop recording (or wait for the 5 second duration to end)"
+    loc = (150, 450)
+    font_size = 12
+    message_display(message, loc, font_size)
+    message = "Results will show once processed"
+    loc = (150, 500)
+    font_size = 12
+    message_display(message, loc, font_size)
 
 """
 Holds actual interactive gameplay of Connect Four that allows the game to be played several times! (hence two while loops)
 """
+
+init_messages()
+pygame.display.set_caption('Had too much to drink?')
+clock = pygame.time.Clock()
+
 while True:
-    gameDisplay = pygame.display.set_mode((width, height))
-    pygame.display.set_caption('Had too much to drink?')
-    clock = pygame.time.Clock()
+
     """
     For loop reads the keyboard for inputs
     """
+    print("?")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            """
-            allows player to close the window by pressing the 'x'
-            """
-            print("QUIT")
             pygame.quit()
-            gameRunning = False
             quit()
         if event.type == pygame.KEYDOWN:
-            # This allows a col to be entered by a number on a key (keys 1 through 7)
-            # r resets the game
-            col = 0
-            if event.key == pygame.K_1:
-                col = 1
+            print("here?")
+            if event.key == pygame.K_r:
+                print("r")
+                record("test_sound_file", pygame)
 
     pygame.display.update()
     clock.tick(60)
