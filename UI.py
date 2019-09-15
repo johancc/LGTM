@@ -70,8 +70,8 @@ def record(filename, pygame):
     CHANNELS = 2
     RATE = 44100
     RECORD_SECONDS = 5
-    WAVE_OUTPUT_FILENAME = filename
-    full_dir = os.path.join(dir_path, filename)
+    # WAVE_OUTPUT_FILENAME = filename
+    full_dir = os.path.join(dir_path, filename+".wav")
     if os.path.exists(full_dir):
         os.remove(full_dir)
         print("Popped")
