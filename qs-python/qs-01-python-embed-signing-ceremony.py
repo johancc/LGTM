@@ -10,10 +10,10 @@ from docusign_esign import ApiClient, EnvelopesApi, EnvelopeDefinition, Signer, 
 # Fill in these constants
 #
 # Obtain an OAuth access token from https://developers.docusign.com/oauth-token-generator
-access_token = 'eyJ0eXAiOiJNVCIsImFsZyI6IlJTMjU2Iiwia2lkIjoiNjgxODVmZjEtNGU1MS00Y2U5LWFmMWMtNjg5ODEyMjAzMzE3In0.AQoAAAABAAUABwAAWwAQ5DnXSAgAAJsjHic610gCABATslyQ--xDnWfvzbzdyTkVAAEAAAAYAAkAAAAFAAAAKwAAAC0AAAAvAAAAMQAAADIAAAA4AAAAMwAAADUAAAANACQAAABmMGYyN2YwZS04NTdkLTRhNzEtYTRkYS0zMmNlY2FlM2E5NzgSAAEAAAALAAAAaW50ZXJhY3RpdmUwAAAuzw7kOddINwB12R2CLefBS5AugYEqqUj_.D-nVar4kj0hNvPQRGMFW3Y1VNMcGYhzqS9m8h2ePClCbHb3hZjbOqcX3D55Gw6uUtJdU5wfi1kE6KUXUQfL3V-E1sKWLBtLe2YEdDrtRI_L4wF9BRQg05KyV-TAm8zCZFDnqAl9TlqvNkEwPv8gyFsrn4SGyT0gzCOti7r4eA808loSZnSVGHHHIlDtz8_-7b1Gw5-kR4t0ibzdEwF6cx2oJ7obHurj_adQsGkbnPXGuC7y51uqOCS2aySWM82onjBxkKK8oIMLaS_UboendajNs7ZzrV1uF9zNyAH-WYc9qfPUpFcJAld0R2qzEX2XnqJH7uPdd82d2Hz4HbkeHeQ'
+access_token = ''
 # Obtain your accountId from demo.docusign.com -- the account id is shown in the drop down on the
 # upper right corner of the screen by your picture or the default picture. 
-account_id = '8999472'
+account_id = ''
 # Recipient Information:
 signer_name = 'Ethan Garza'
 signer_email = 'eamaliacool@gmail.com'
