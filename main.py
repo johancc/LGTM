@@ -33,7 +33,7 @@ class Analysis:
     More fields should be added as the api interface is finalized.
     """
     intoxicated: bool
-    difference: float
+    similarity: float
 
 
 # def download(url: str) -> str:
@@ -82,8 +82,9 @@ def analyze(filename: str, original_text: str) -> Analysis:
     rev_ai_output = REV_AI.get_transcript(filename)
     print(rev_ai_output)
     match_ratio += fuzz.ratio(original_text, rev_ai_output)
-    analysis = Analysis(difference=match_ratio / 1,
-                        intoxicated=match_ratio / 1 <= 0.2)
+    analysis = Analysis(similarity=match_ratio / 1,
+                        intoxicated=match_ratio / 1 <= 80)
+    print(analysis)
     return analysis
 
 
