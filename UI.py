@@ -113,11 +113,11 @@ def record(filename, pygame):
 
 def init_messages():
     message = "press r to record (will automatically stop recording after 5 seconds)"
-    loc = (150, 400)
+    loc = (250, 400)
     font_size = 12
     message_display(message, loc, font_size)
     message = "press s to stop recording (or wait for the 5 second duration to end)"
-    loc = (150, 450)
+    loc = (250, 450)
     font_size = 12
     message_display(message, loc, font_size)
     message = "Results will show once processed"
@@ -138,15 +138,15 @@ while True:
     """
     For loop reads the keyboard for inputs
     """
-    print("?")
+    # print("?")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             quit()
         if event.type == pygame.KEYDOWN:
-            print("here?")
+            # print("here?")
             if event.key == pygame.K_r:
-                print("r")
+                # print("r")
                 record("test_sound_file", pygame)
 
     pygame.display.update()
