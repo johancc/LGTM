@@ -1,4 +1,5 @@
 import pyaudio
+from revAI import *
 
 __author__ = "Ethan Garza"
 
@@ -35,6 +36,17 @@ gameDisplay = pygame.display.set_mode((width, height))
 gameDisplay.fill(YELLOW)
 
 overall_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_sound_file.wav")
+phrase = "I not am drunk"
+sad = "sad.jp2"
+happy = "happy.jpg"
+
+def display_im(im_path):
+    Img = pygame.image.load(im_path)
+    Img = pygame.transform.scale(Img, (453, 340))
+    x = 60
+    y = 40
+    gameDisplay.blit(Img, (x,y))
+
 
 def text_objects(text, font):
     """
@@ -62,6 +74,44 @@ def message_display(text, loc, size):
     gameDisplay.blit(TextSurf, TextRect)
 
     pygame.display.update()
+
+
+def api_call(file):
+    models = []
+    models.append(RevAI())
+    # revai.get_transcript("test.m4a")
+    text_results = []
+    for model in models:
+        text_results.append(model.get_transcript(file))
+    analysis = []
+    overall_score = 0
+    for text in text_results:
+        overall_score += analysis(phrase, text)
+    overall_score = overall_score/len(text_results)
+    print("Average Score:", overall_score)
+    if overall_score > 0.5:
+        return 1
+    else:
+        return 0
+
+def analyze(phrase, attempt):
+    t1 = phrase.split(" ")
+    t2 = phrase.split(" ")
+    score = 0
+    cap = 0
+    if len(t1) < len(t2):
+        cap = len(t1)
+    else:
+        cap = len(t2)
+    for i in range(cap):
+        if t1[i] == t2[i]:
+            score += 1
+    denominator = cap + abs(len(t1) - len(t2))
+    print("Attempt:", attempt)
+    print("Score:", score/denominator)
+    print()
+    return score / denominator
+
 
 
 # filename is a string and in a .wav format
@@ -113,18 +163,31 @@ def record(filename, pygame):
     wf.setframerate(RATE)
     wf.writeframes(b''.join(frames))
     wf.close()
+    # call method function here
+    result = api_call(overall_file)
+    if result == 1:
+        # display_im("good to go!")
+        display_im(happy)
+        message = "Good to go!"
+    else:
+        # display_im("not so good...")
+        display_im(sad)
+        message = "Drunk as a skunk!"
+    loc = (255, 410)
+    font_size = 40
+    message_display(message, loc, font_size)
 
 def init_messages():
     message = "press r to record (will automatically stop recording after 5 seconds)"
-    loc = (250, 400)
+    loc = (250, 500)
     font_size = 12
     message_display(message, loc, font_size)
     message = "press s to stop recording (or wait for the 5 second duration to end)"
-    loc = (250, 450)
+    loc = (250, 550)
     font_size = 12
     message_display(message, loc, font_size)
     message = "Results will show once processed"
-    loc = (150, 500)
+    loc = (150, 600)
     font_size = 12
     message_display(message, loc, font_size)
 
@@ -151,6 +214,12 @@ while True:
             if event.key == pygame.K_r:
                 # print("r")re
                 record("test_sound_file", pygame)
+            if event.key == pygame.K_t:
+                display_im(happy)
+                message = "Drunk as a skunk!"
+                loc = (255, 410)
+                font_size = 40
+                message_display(message, loc, font_size)
 
     pygame.display.update()
     clock.tick(60)
