@@ -4,19 +4,25 @@ The server is stateless, no information is stored.
 WIRE PROTOCOL --
 POST:
     {"path" : string pointing to filepath of the audio} -> True or False, depending on whether the audio is of a
-    person under the influence.
-
+    person under the influence,
+    "link" : link to the Google Cloud Object Storage object. The object must be public,
+    "original_text": The original text that the user was asked to recite.
 """
 import os
 from dataclasses import dataclass
 
+import requests
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
+from fuzzywuzzy import fuzz
 
+from revAI import RevAI
+
+AUDIO_FILE_EXTENSION = ".mp3"
+BUCKET_NAME = "lgtm_hackmit/o/"
+REV_AI = RevAI()
 app = Flask(__name__)
 api = Api(app)
-
-a = ".mp3"
 
 
 @dataclass
@@ -25,14 +31,33 @@ class Analysis:
     Response of the speech to text analysis from various apis.
     More fields should be added as the api interface is finalized.
     """
-    drunk: bool
+    intoxicated: bool
+    difference: float
+
+def download(url: str) -> str:
+    """
+    Download file to temporary storage
+    :param url: Path to the Google Cloud Object Storage file. Must be a public object.
+    :return: file path
+    """
+    # Extracting the filename from the url
+    # Based on the assumption that the filename is between the bucket name and '?'
+    start_index = url.index(BUCKET_NAME) + len(BUCKET_NAME)
+    filename = url[start_index: url.index("?")]
+    r = requests.get(url)
+    with open(filename, "wb") as code:
+        code.write(r.content)
+    return filename
 
 
-def analyze(filename: str) -> Analysis:
-    # TODO: Feed the audio file into the api interface.
+def analyze(filename: str, original_text: str) -> Analysis:
     if not os.path.isfile(filename):
         raise ValueError("Path does not exist.")
-    analysis = Analysis(drunk=True)
+    match_ratio = 0
+    rev_ai_output = REV_AI.get_transcript(filename)
+    match_ratio += fuzz.ratio(original_text, rev_ai_output)
+    analysis = Analysis(difference=match_ratio / 1,
+                        intoxicated=match_ratio / 1 <= 0.2)
     return analysis
 
 
@@ -41,14 +66,19 @@ class LGTM(Resource):
     def post(self) -> tuple:
         parser = reqparse.RequestParser()
         parser.add_argument("path")
+        parser.add_argument("link")
+        parser.add_argument("original_text")
         args = parser.parse_args()
-
         audio_file_path = args["path"]
+        google_object_link = args["link"]
+        original_text = args["original_text"]
+        if google_object_link is not None:
+            audio_file_path = download(google_object_link)
         try:
-            analysis = analyze(audio_file_path)
+            analysis = analyze(audio_file_path, original_text)
         except ValueError:
             return False, 400
-        if analysis.drunk:
+        if analysis.intoxicated:
             return True, 200
         else:
             return False, 200
