@@ -4,7 +4,6 @@ __author__ = "Ethan Garza"
 
 import pygame
 import os
-# import pyaudio
 import wave
 
 pygame.init()
@@ -66,14 +65,15 @@ def message_display(text, loc, size):
 
 # filename is a string and in a .wav format
 def record(filename, pygame):
+    import pyaudio
     dir_path = os.path.dirname(os.path.realpath(__file__))
     CHUNK = 1024
     FORMAT = pyaudio.paInt16
     CHANNELS = 2
     RATE = 44100
     RECORD_SECONDS = 5
-    WAVE_OUTPUT_FILENAME = filename
-    full_dir = os.path.join(dir_path, filename)
+    # WAVE_OUTPUT_FILENAME = filename
+    full_dir = os.path.join(dir_path, filename+".wav")
     if os.path.exists(full_dir):
         os.remove(full_dir)
         print("Popped")
