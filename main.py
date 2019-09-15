@@ -53,11 +53,11 @@ def download(url: str) -> str:
 def analyze(filename: str, original_text: str) -> Analysis:
     if not os.path.isfile(filename):
         raise ValueError("Path does not exist.")
-    current_diff = 0
+    match_ratio = 0
     rev_ai_output = REV_AI.get_transcript(filename)
-    current_diff += fuzz.ratio(original_text, rev_ai_output)
-    analysis = Analysis(difference=current_diff / 1,
-                        intoxicated=current_diff / 1 >= 0.2)
+    match_ratio += fuzz.ratio(original_text, rev_ai_output)
+    analysis = Analysis(difference=match_ratio / 1,
+                        intoxicated=match_ratio / 1 <= 0.2)
     return analysis
 
 
