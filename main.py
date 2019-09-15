@@ -23,6 +23,7 @@ BUCKET_NAME = "lgtm_hackmit/o/"
 REV_AI = RevAI()
 app = Flask(__name__)
 api = Api(app)
+overall_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_sound_file.wav")
 
 
 @dataclass
@@ -35,6 +36,21 @@ class Analysis:
     difference: float
 
 
+# def download(url: str) -> str:
+#     """
+#     Download file to temporary storage
+#     :param url: Path to the Google Cloud Object Storage file. Must be a public object.
+#     :return: file path
+#     """
+#     # Extracting the filename from the url
+#     # Based on the assumption that the filename is between the bucket name and '?'
+#     start_index = url.index(BUCKET_NAME) + len(BUCKET_NAME)
+#     filename = url[start_index: url.index("?")]
+#     r = requests.get(url)
+#     with open(filename, "wb") as code:
+#         code.write(r.content)
+#     return filename
+
 def download(url: str) -> str:
     """
     Download file to temporary storage
@@ -45,6 +61,7 @@ def download(url: str) -> str:
     # Based on the assumption that the filename is between the bucket name and '?'
     start_index = url.index(BUCKET_NAME) + len(BUCKET_NAME)
     filename = url[start_index: url.index("?")]
+    filename = overall_file
     r = requests.get(url)
     with open(filename, "wb") as code:
         code.write(r.content)

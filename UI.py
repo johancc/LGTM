@@ -34,6 +34,7 @@ end_y = height
 gameDisplay = pygame.display.set_mode((width, height))
 gameDisplay.fill(YELLOW)
 
+overall_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_sound_file.wav")
 
 def text_objects(text, font):
     """
