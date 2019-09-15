@@ -4,15 +4,17 @@ The server is stateless, no information is stored.
 WIRE PROTOCOL --
 POST:
     {"path" : string pointing to filepath of the audio} -> True or False, depending on whether the audio is of a
-    person under the influence.
-    {"link" : link to the Google Cloud Object Storage object. The object must be public.
+    person under the influence,
+    "link" : link to the Google Cloud Object Storage object. The object must be public,
+    "original_text": The original text that the user was asked to recite.
 """
 import os
-import requests
 from dataclasses import dataclass
 
+import requests
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
+from fuzzywuzzy import fuzz
 
 from revAI import RevAI
 
@@ -23,15 +25,14 @@ app = Flask(__name__)
 api = Api(app)
 
 
-
 @dataclass
 class Analysis:
     """
     Response of the speech to text analysis from various apis.
     More fields should be added as the api interface is finalized.
     """
-    drunk: bool
-
+    intoxicated: bool
+    difference: float
 
 def download(url: str) -> str:
     """
@@ -49,17 +50,14 @@ def download(url: str) -> str:
     return filename
 
 
-def analyze(filename: str) -> Analysis:
-    # TODO: Feed the audio file into the api interface.
+def analyze(filename: str, original_text: str) -> Analysis:
     if not os.path.isfile(filename):
         raise ValueError("Path does not exist.")
-    print("made it.")
+    current_diff = 0
     rev_ai_output = REV_AI.get_transcript(filename)
-    print("finished.")
-    # Find some way to compare the example text with the output.
-    print("Transcript: " + rev_ai_output)
-    analysis = Analysis(drunk=True)
-
+    current_diff += fuzz.ratio(original_text, rev_ai_output)
+    analysis = Analysis(difference=current_diff / 1,
+                        intoxicated=current_diff / 1 >= 0.2)
     return analysis
 
 
@@ -69,17 +67,18 @@ class LGTM(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument("path")
         parser.add_argument("link")
+        parser.add_argument("original_text")
         args = parser.parse_args()
         audio_file_path = args["path"]
         google_object_link = args["link"]
-
+        original_text = args["original_text"]
         if google_object_link is not None:
             audio_file_path = download(google_object_link)
         try:
-            analysis = analyze(audio_file_path)
+            analysis = analyze(audio_file_path, original_text)
         except ValueError:
             return False, 400
-        if analysis.drunk:
+        if analysis.intoxicated:
             return True, 200
         else:
             return False, 200
