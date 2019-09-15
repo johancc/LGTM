@@ -2,7 +2,6 @@ __author__ = "Ethan Garza"
 
 import pygame
 import os
-# import pyaudio
 import wave
 
 pygame.init()
@@ -64,6 +63,7 @@ def message_display(text, loc, size):
 
 # filename is a string and in a .wav format
 def record(filename, pygame):
+    import pyaudio
     dir_path = os.path.dirname(os.path.realpath(__file__))
     CHUNK = 1024
     FORMAT = pyaudio.paInt16
